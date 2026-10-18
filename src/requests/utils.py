@@ -130,7 +130,7 @@ if sys.platform == "win32":
             test = test.replace(".", r"\.")  # mask dots
             test = test.replace("*", r".*")  # change glob sequence
             test = test.replace("?", r".")  # change glob char
-            if re.match(test, host, re.I):
+            if re.match(test + r"\Z", host, re.I):
                 return True
         return False
 
@@ -1153,3 +1153,4 @@ def rewind_body(prepared_request: PreparedRequest) -> None:
             )
     else:
         raise UnrewindableBodyError("Unable to rewind request body for redirect.")
+
