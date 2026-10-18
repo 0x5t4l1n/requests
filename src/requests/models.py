@@ -213,12 +213,18 @@ class RequestEncodingMixin:
                         (
                             field.decode("utf-8")
                             if isinstance(field, bytes)
-                            else field,
+                            else str(field),
                             v.encode("utf-8") if isinstance(v, str) else v,
                         )
                     )
 
         for k, v in files:
+            # Normalise the field name to str so urllib3.RequestField does not
+            # receive a non-string and raise AttributeError (issue #7634).
+            if isinstance(k, bytes):
+                k = k.decode("utf-8")
+            elif not isinstance(k, str):
+                k = str(k)
             # support for explicit filename
             ft = None
             fh = None
@@ -1182,3 +1188,4 @@ class Response:
         release_conn = getattr(self.raw, "release_conn", None)
         if release_conn is not None:
             release_conn()
+
